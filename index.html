@@ -28,8 +28,8 @@ const db = firebase.database();
   --bg-status: #E8DCC8;
   --bg-detail: #F1E8DB;
   --card: #FFF9F3;
-  --text: #2F281F;
-  --muted: #6E6258;
+  --text: #2A241C;
+  --muted: #5C534C;
   --border: #C4AE94;
   --accent: #4F6B3E;
   --accent-hover: #3E552F;
@@ -38,6 +38,9 @@ const db = firebase.database();
   --wood-light: #B88860;
   --wood-soft: #E6D0B8;
   --olive-soft: #E0E8D8;
+}
+html {
+  scroll-behavior: smooth;
 }
 * { box-sizing:border-box; margin:0; padding:0; }
 body { 
@@ -57,7 +60,7 @@ body::before {
   inset: 0;
   pointer-events: none;
   z-index: -1;
-  opacity: 0.09;
+  opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cg fill='none' stroke='%23A67C52' stroke-width='1.2'%3E%3Cpath d='M30 40 h40 v50 h-40z'/%3E%3Cpath d='M50 40 v-10 h20 v10'/%3E%3Ccircle cx='120' cy='50' r='18'/%3E%3Cpath d='M120 32 v-12 M108 42 h-12 M132 42 h12'/%3E%3Cpath d='M40 120 l20-18 20 18-20 18z'/%3E%3Cpath d='M100 110 h36 v28 h-36z'/%3E%3Cpath d='M106 110 v-6 h24 v6'/%3E%3C/g%3E%3C/svg%3E");
 }
 h1 { font-size: 1.45rem; font-weight: 650; letter-spacing: -0.02em; }
@@ -142,7 +145,10 @@ h1 { font-size: 1.45rem; font-weight: 650; letter-spacing: -0.02em; }
 .item:hover, .item:active { border-color: var(--wood); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(166,124,82,0.12); }
 .item-header { display: flex; justify-content: space-between; align-items: center; }
 .item-name { font-weight: 600; font-size: 1.02rem; }
-.priority { font-size: 0.75rem; color: var(--muted); background: var(--olive-soft); padding: 0.15rem 0.5rem; border-radius: 20px; }
+.priority { font-size: 0.75rem; padding: 0.2rem 0.55rem; border-radius: 6px; font-weight: 600; white-space: nowrap; }
+.priority-high { background: #C45C4A; color: #fff; }
+.priority-medium { background: #D4A054; color: #fff; }
+.priority-low { background: #7A9B76; color: #fff; }
 .item-meta { color: var(--muted); font-size: 0.83rem; margin-top: 0.3rem; display: flex; align-items: center; gap: 0.35rem; }
 .item-meta svg { flex-shrink: 0; opacity: 0.9; }
 .form, .detail, .page { 
@@ -336,7 +342,10 @@ button:focus-visible {outline:3px solid #c78e65;outline-offset:3px;}
 .item-name {font-size:1.12rem;font-weight:700;}
 .item-meta {color:var(--muted);flex-wrap:wrap;margin-top:7px;}
 .item-meta svg {stroke:#56765a;}
-.priority {border-radius:3px;background:#e5ebdf;color:#345844;font-weight:600;white-space:nowrap;}
+.priority {border-radius:3px;font-weight:600;white-space:nowrap;}
+.priority-high { background: #6B3E1F !important; color: #fff !important; }
+.priority-medium { background: #A67C52 !important; color: #fff !important; }
+.priority-low { background: #6B7F5A !important; color: #fff !important; }
 .done {opacity:.76;border-right-color:#a8b2a5;}
 .form,.detail,.page {border-radius:6px;padding:24px;border:1px solid var(--border);box-shadow:0 4px 16px #25352e0a;}
 #home .form,#inspiration .form,#gallery .form {background:#e8ece2!important;}
@@ -360,7 +369,21 @@ input[type=file]::file-selector-button {font:inherit;color:var(--accent);backgro
 .floating-home {background:#fffefa;color:var(--accent);border-color:#a4b39b;}
 .floating-home:hover,.floating-home:active {color:white;}
 @media(max-width:720px){body{padding:12px 12px 94px;} .topbar{padding:20px 16px 15px;gap:14px;} #list{grid-template-columns:1fr;} .topbar .nav > .btn:last-child{margin-inline-start:0;} .nav{gap:5px;} .topbar .btn{flex:1 1 auto;padding:8px 10px;} .form,.detail,.page{padding:16px;} .topbar::before{background-size:330px auto;opacity:.14;} }
-@media(max-width:480px){.title-wrap{justify-content:flex-start;} .leaf-icon{width:46px;height:46px;background-size:34px;} .topbar .nav .btn{flex:1 1 29%;font-size:.78rem;min-width:0;} .topbar .nav > .btn:last-child{flex:1 1 29%;} .stats{gap:8px;} .stat{padding:14px 7px;} .page-title{font-size:1.35rem;} #filterBar{padding:10px;} .pair img{height:145px;} }
+@media(max-width:480px){
+  .title-wrap{justify-content:flex-start;}
+  .leaf-icon{width:46px;height:46px;background-size:34px;}
+  .topbar .nav .btn{flex:1 1 29%;font-size:.78rem;min-width:0;}
+  .topbar .nav > .btn:last-child{flex:1 1 29%;}
+  .stats{gap:8px;}
+  .stat{padding:14px 7px;}
+  .page-title{font-size:1.35rem;}
+  #filterBar{padding:10px; flex-direction:column;}
+  #filterBar select{width:100%;}
+  .pair img{height:145px;}
+  .floating-add{bottom:0.8rem; right:0.8rem; width:54px; height:54px;}
+  .floating-home{bottom:0.8rem; left:0.8rem; width:50px; height:50px;}
+  body{padding-bottom:100px;}
+}
 
 </style>
 </head>
@@ -631,7 +654,7 @@ function renderList() {
     return `<div class="item ${it.done?'done':''}" onclick="openDetail(${idx})">
       <div class="item-header">
         <div class="item-name">${it.name||''} ${it.done?'✓':''}</div>
-        <div class="priority">${{high:'גבוהה',medium:'בינונית',low:'נמוכה'}[it.priority]||''}</div>
+        <div class="priority priority-${it.priority||'medium'}">${{high:'גבוהה',medium:'בינונית',low:'נמוכה'}[it.priority]||''}</div>
       </div>
       <div class="item-meta">${getAreaIcon(it.area)} ${it.area||'—'} · ${(it.cost||0).toLocaleString()} ש״ח</div>
       ${it.desc?`<div style="font-size:0.85rem;margin-top:0.3rem;">${it.desc}</div>`:''}
@@ -659,23 +682,35 @@ function updateFloatingAdd() {
 function handleFloatingAdd() {
   if (currentPage === 'home') {
     showAdd();
+    setTimeout(() => {
+      const form = document.getElementById('addForm');
+      if (form) {
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const first = form.querySelector('input, select, textarea');
+        if (first) first.focus();
+      }
+    }, 100);
   } else if (currentPage === 'gallery') {
-    // Scroll to the upload form in gallery
     const form = document.querySelector('#gallery .form');
-    if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    const fileInput = document.getElementById('gBefore');
-    if (fileInput) fileInput.click();
+    if (form) {
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const first = form.querySelector('input');
+      if (first) setTimeout(() => first.focus(), 300);
+    }
   } else if (currentPage === 'inspiration') {
     const form = document.querySelector('#inspiration .form');
-    if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    const fileInput = document.getElementById('inspFiles');
-    if (fileInput) fileInput.click();
+    if (form) {
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const first = form.querySelector('input');
+      if (first) setTimeout(() => first.focus(), 300);
+    }
   }
 }
 
 function showAdd() {
-  document.getElementById('addForm').classList.remove('hidden');
-  document.getElementById('addForm').dataset.editIdx = '';
+  const form = document.getElementById('addForm');
+  form.classList.remove('hidden');
+  form.dataset.editIdx = '';
   document.querySelector('#addForm .btn').textContent = 'שמור';
 }
 function hideAdd() { document.getElementById('addForm').classList.add('hidden'); }
