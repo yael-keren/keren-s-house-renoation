@@ -782,12 +782,19 @@ function renderDetail(idx) {
       <button class="btn btn-outline btn-small" onclick="deleteItem(${idx})">מחק</button>
     </div>
     <div class="chat">
-      <div style="font-weight:600; margin-bottom:0.4rem;">צ׳אט</div>
-      ${comments.map(c=>`<div class="msg"><strong>${c.user||'משתמש'}</strong> <span class="time">${new Date(c.time).toLocaleString('he-IL')}</span><br>${c.text}</div>`).join('')||'<div style="color:#999;font-size:0.8rem;">אין הערות</div>'}
+      <div style="font-weight:600; margin-bottom:0.4rem; display:flex; justify-content:space-between; align-items:center;">
+        <span>צ׳אט</span>
+        <button class="btn btn-outline btn-small" style="padding:0.25rem 0.6rem; min-height:auto; font-size:0.75rem;" onclick="deleteSelectedChats(${idx})">מחק מסומנות</button>
+      </div>
+      ${comments.map((c, ci)=>`<div class="msg" style="display:flex; align-items:flex-start; gap:0.5rem;">
+        <input type="checkbox" class="chat-check" data-idx="${ci}" style="margin-top:0.3rem; width:18px; height:18px;">
+        <div style="flex:1;"><strong>${c.user||'משתמש'}</strong> <span class="time">${new Date(c.time).toLocaleString('he-IL')}</span><br>${c.text}</div>
+      </div>`).join('')||'<div style="color:#999;font-size:0.8rem;">אין הערות</div>'}
       <div style="display:flex; gap:0.3rem; margin-top:0.5rem;">
         <input id="chatInput" placeholder="הערה..." style="flex:1; padding:0.4rem; border:1px solid #e5e5e5; border-radius:6px;">
         <button class="btn btn-small" onclick="addChat(${idx})">שלח</button>
       </div>
+      <div id="chatStatus" style="font-size:0.75rem; color:var(--accent); margin-top:0.3rem; min-height:1rem;"></div>
     </div>
   `;
 }
@@ -821,11 +828,31 @@ function deleteItem(idx) {
 }
 
 function addChat(idx) {
-  const text = document.getElementById('chatInput').value.trim();
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
   if (!text) return;
   if (!items[idx].comments) items[idx].comments = [];
   items[idx].comments.push({ user:'משתמש', text, time:Date.now() });
   saveItems();
+  input.value = '';
+  const status = document.getElementById('chatStatus');
+  if (status) {
+    status.textContent = 'ההערה נשלחה ✓';
+    setTimeout(() => { status.textContent = ''; }, 2000);
+  }
+  renderDetail(idx);
+}
+
+function deleteSelectedChats(idx) {
+  const checks = document.querySelectorAll('.chat-check:checked');
+  if (!checks.length) return alert('לא נבחרו הערות');
+  if (!confirm(`למחוק ${checks.length} הערות?`)) return;
+  const indices = Array.from(checks).map(c => parseInt(c.dataset.idx)).sort((a,b)=>b-a);
+  indices.forEach(i => {
+    if (items[idx].comments) items[idx].comments.splice(i, 1);
+  });
+  saveItems();
+  renderDetail(idx);
 }
 
 function renderGallery() {
