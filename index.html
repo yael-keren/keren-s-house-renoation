@@ -874,14 +874,47 @@ function renderGallery() {
     const div = document.createElement('div');
     div.className = 'pair';
     div.innerHTML = `
-      <div class="label">${p.label||''}</div>
+      <div class="label">${p.label||'ללא שם'}</div>
       <div style="display:flex; gap:0.3rem;">
-        <div style="flex:1;"><div class="label">לפני</div>${p.before?`<img src="${p.before}" loading="lazy" alt="לפני">`:''}</div>
-        <div style="flex:1;"><div class="label">אחרי</div>${p.after?`<img src="${p.after}" loading="lazy" alt="אחרי">`:`<div style="height:110px;background:#f5f5f5;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:0.75rem;">+ אחרי</div>`}</div>
+        <div style="flex:1;">
+          <div class="label">לפני</div>
+          ${p.before?`<img src="${p.before}" loading="lazy" alt="לפני">`:''}
+          <button class="btn btn-outline btn-small" style="width:100%; margin-top:0.2rem; font-size:0.7rem;" onclick="swapGallery(${i})">העבר לאחרי</button>
+        </div>
+        <div style="flex:1;">
+          <div class="label">אחרי</div>
+          ${p.after?`<img src="${p.after}" loading="lazy" alt="אחרי">`:`<div style="height:110px;background:#f5f5f5;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:0.75rem;">+ אחרי</div>`}
+          ${p.after?`<button class="btn btn-outline btn-small" style="width:100%; margin-top:0.2rem; font-size:0.7rem;" onclick="swapGallery(${i})">העבר ללפני</button>`:''}
+        </div>
+      </div>
+      <div style="display:flex; gap:0.3rem; margin-top:0.4rem;">
+        <button class="btn btn-outline btn-small" style="flex:1; font-size:0.75rem;" onclick="editGalleryLabel(${i})">שנה שם</button>
+        <button class="btn btn-outline btn-small" style="flex:1; font-size:0.75rem;" onclick="deleteGallery(${i})">מחק</button>
       </div>
     `;
     grid.appendChild(div);
   });
+}
+
+function editGalleryLabel(idx) {
+  const newLabel = prompt('שם חדש:', gallery[idx].label || '');
+  if (newLabel === null) return;
+  gallery[idx].label = newLabel.trim() || 'ללא שם';
+  db.ref('gallery').set(gallery);
+}
+
+function deleteGallery(idx) {
+  if (!confirm('למחוק את התמונה?')) return;
+  gallery.splice(idx, 1);
+  db.ref('gallery').set(gallery);
+}
+
+function swapGallery(idx) {
+  const p = gallery[idx];
+  const tmp = p.before;
+  p.before = p.after || '';
+  p.after = tmp || '';
+  db.ref('gallery').set(gallery);
 }
 
 function addGallery() {
@@ -1027,4 +1060,3 @@ updateBreadcrumb('<strong>בית</strong>');
 </script>
 </body>
 </html>
-
